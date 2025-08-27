@@ -12,4 +12,7 @@ def test_age_40_and_10_expreience():
     # age 40 and 10years experience → should be 20%
     assert calculate_discount(40, 10) == 20
 
-    
+def test_invalid_negative_age():
+    # negative age should return an error
+    with pytest.raises(ValueError):
+        calculate_discount(-5,3)
