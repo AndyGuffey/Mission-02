@@ -24,3 +24,18 @@ def test_base_discount():
 def test_age_25_only():
     # Age 25, no experience → should be 5%
     assert calculate_discount(25, 0) == 5
+
+def calculate_discount(age:int, experience: int) -> int:
+    if age < 0 or experience <0:
+        raise ValueError("Invalid input: negative values are not allowed ")
+    
+    discount = 0 
+    if age >= 25:
+        discount += 5
+    if experience >= 5:
+        discount += 5
+    if age >= 40:
+        discount += 5
+    if experience >= 10:
+        discount += 5
+    return min(discount,20)
