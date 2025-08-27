@@ -39,3 +39,15 @@ def calculate_discount(age:int, experience: int) -> int:
     if experience >= 10:
         discount += 5
     return min(discount,20)
+
+# failing API tests
+
+from fastapi.testclient import TestClient
+from main import app
+
+client = TestClient(app)
+
+def test_api_discount_30_6():
+    response = client.post("/discount", json={"age": 30, "experiece": 6})
+    assert response.status_code==200 
+    assert response.json() == {"discount_rate": 10}
