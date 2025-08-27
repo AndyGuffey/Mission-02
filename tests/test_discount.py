@@ -51,3 +51,7 @@ def test_api_discount_30_6():
     response = client.post("/discount", json={"age": 30, "experiece": 6})
     assert response.status_code==200 
     assert response.json() == {"discount_rate": 10}
+
+def test_age_40_and_10_experience():
+  # age 40 and 10years experience → should be 20% (max cap)
+  assert
