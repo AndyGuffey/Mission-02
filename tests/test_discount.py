@@ -54,4 +54,4 @@ def test_api_discount_30_6():
 
 def test_age_40_and_10_experience():
   # age 40 and 10years experience → should be 20% (max cap)
-  assert
+  assert calculate_discount(40, 10) == 20
