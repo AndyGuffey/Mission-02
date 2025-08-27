@@ -1,3 +1,9 @@
 
 def calculate_discount(age: int, experience: int) -> int:
-    return 10 # hardcoded to pass the test 
+    discount = 0 
+    if age >= 25:
+        discount += 5
+        if experience >= 5:
+            discount += 5
+
+    return discount # this must be at the same indentation level as the if statement
