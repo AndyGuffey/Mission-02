@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from discount_logic import calculate_discount
 
+
+
 app = FastAPI()
 
 # Input schema
