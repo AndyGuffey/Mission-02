@@ -1,5 +1,12 @@
 import pytest
+from fastapi.testclient import TestClient
+from main import app
 from discount_logic import calculate_discount
+
+client = TestClient(app)
+
+
+
 
 def test_base_discount():
     # Driver age 30, experience 6 → should give 10%
@@ -20,6 +27,8 @@ def test_base_discount():
 # The maximum possible discount is 20%. 
 # If the input values are invalid, such as negative numbers or non-numeric values, an error message is returned.
 
+
+# ||--- UNIT TESTS FOR DISCOUNT LOGIC ----||
 
 def test_age_25_only():
     # Age 25, no experience → should be 5%
@@ -48,9 +57,14 @@ from main import app
 client = TestClient(app)
 
 def test_api_discount_30_6():
-    response = client.post("/discount", json={"age": 30, "experiece": 6})
+    response = client.post("/discount", json={"age": 30, "experience": 6})
     assert response.status_code==200 
     assert response.json() == {"discount_rate": 10}
+
+def test_invalid_negative_age():
+    # negative age should return an error
+    with pytest.raises(ValueError):
+        calculate_discount(-5,3)
 
 def test_age_40_and_10_experience():
   # age 40 and 10years experience → should be 20% (max cap)
