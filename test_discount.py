@@ -69,3 +69,15 @@ def test_invalid_negative_age():
 def test_age_40_and_10_experience():
   # age 40 and 10years experience → should be 20% (max cap)
   assert calculate_discount(40, 10) == 20
+
+
+  class TestCalculateDiscount:
+      """Test cases for the discount calculation business logic"""
+
+      def test_zero_discount_for_young_inexperienced_driver(self):
+          """Test that drivers under 25 with less than 5 years experience get 0% discount"""
+          # Driver age 20, experience 1 → should give 0%
+          result= calculate_discount(age=20, experience=2)
+          assert result == 0
+
+    
