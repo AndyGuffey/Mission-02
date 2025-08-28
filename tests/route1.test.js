@@ -61,7 +61,7 @@ describe("Car Value Suggestion", () => {
   // - So the formula becomes: 0*100 + year = year
   // - For mixed models (e.g., "X5"), only letters count in the sum
   describe("Numbers Only Scenario", () => {
-    test("Should return the correct value when model contains only numbers ", async () => {
+    test("Should return correct value when model contains only numbers: (911,2025) Value: 2025", async () => {
       const res = await request(app)
         .post("/route1")
         .send({ model: "911", year: 2025 });
@@ -69,7 +69,7 @@ describe("Car Value Suggestion", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual({ suggestedValue: "2025" });
     });
-    test("Should correctly handle model with mix of numbers and letters", async () => {
+    test("Should correctly handle model with mix of numbers and letters: (X5, 2023) Value: 4423", async () => {
       const res = await request(app)
         .post("/route1")
         .send({ model: "X5", year: 2023 });
@@ -83,52 +83,84 @@ describe("Car Value Suggestion", () => {
   //* ================================
   //* ==    Ignore Space & Signs    ==
   //* ================================
-  // test("Should ignore spaces in model when calculating value", async () => {
-  //   const res = await request(app)
-  //     .post("/route1")
-  //     .send({ model: "Grand Cherokee", year: 2018 });
-  //   expect(res.statusCode).toBe(200);
-  //   expect(res.body).toEqual({ suggestedValue: "13,418" });
-  // });
+  // - Spaces in model names should be ignored (e.g., "Grand Cherokee")
+  // - Special characters and symbols should be ignored (e.g., "F@St $PEEDY BO!")
+  // - Only letters contribute to the value calculation
+  // - For example: "Grand Cherokee" -> G=7, R=18, A=1, etc. (spaces ignored)
+
+  describe("Ignore Space & Signs Scenario", () => {
+    test("Should ignore spaces in model when calculating value: (Grand Cherokee, 2018) Value: $13,418", async () => {
+      const res = await request(app)
+        .post("/route1")
+        .send({ model: "Grand Cherokee", year: 2018 });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({ suggestedValue: "13418" });
+    });
+
+    test("Should Ignore special characters when calculating value: (F@St BO!, 1946) Value: $8,146", async () => {
+      const res = await request(app)
+        .post("/route1")
+        .send({ model: "F@St BO!", year: 1946 });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({ suggestedValue: "8146" });
+    });
+  });
 
   //! ========================
   //! ==    Negative Year   ==
   //! ========================
-  // test("Should return an Error Message- Negative year input", async () => {
-  //   const res = await request(app)
-  //     .post("/route1")
-  //     .send({ model: "Hilux", year: -2018 });
-  //   // Valid model, but negative number
-  //   expect(res.statusCode).toBe(400);
-  //   expect(res.body).toHaveProperty("error");
-  // });
+  // - If a negative year is provided (e.g., -2018), the API should return a 400 error
+  // - Validation should occur before any calculation is attempted
+  // - A descriptive error message should be included in the response
+  describe("Negative Year Scenario", () => {
+    test("Should return an Error Message- Year must be a positive number: (Hilux, -2018)", async () => {
+      const res = await request(app)
+        .post("/route1")
+        .send({ model: "Hilux", year: -2018 });
+      // Valid model, but negative number
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("error");
+    });
+  });
 
   //! ========================
   //! ==   Wrong Data Type  ==
   //! ========================
-  // test("Should return an ERROR if wrong data type input", async () => {
-  //   const res = await request(app)
-  //     .post("/route1")
-  //     .send({ model: "X5", year: "Twenty Twenty" });
-  //   // Invalid model & year data types
-  //   expect(res.statusCode).toBe(400);
-  //   expect(res.body).toHaveProperty("error");
-  // });
+  describe("Wrong Data Type Scenario", () => {
+    test("Should return an ERROR if year is wrong data type: (Hilux, 'Twenty Twenty')", async () => {
+      const res = await request(app)
+        .post("/route1")
+        .send({ model: "Hilux", year: "Twenty Twenty" });
+      // Valid model &  wrong year data types
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("error");
+    });
+    test(" Should return an ERROR if model is not a string:(1996, 2020)", async () => {
+      const res = await request(app)
+        .post("/route1")
+        .send({ model: 1996, year: 2020 });
+      // Invalid model data type
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("error");
+    });
+  });
 
   //TODO ========================
   //TODO ==     Edge Cases     ==
   //TODO ========================
-  // test("Should return an ERROR if model is empty string", async () => {
-  //   const res = await request(app)
-  //     .post("/route1")
-  //     .send({ model: "", year: 1996 });
-  //   expect(res.statusCode).toBe(400);
-  //   expect(res.body).toHaveProperty("error");
-  // });
+  // describe("Edge Case Scenarios", () => {
+  //   test("Should return an ERROR if model is empty string", async () => {
+  //     const res = await request(app)
+  //       .post("/route1")
+  //       .send({ model: "", year: 1996 });
+  //     expect(res.statusCode).toBe(400);
+  //     expect(res.body).toHaveProperty("error");
+  //   });
 
-  // test("Should return an ERROR if Year is empty", async () => {
-  //   const res = await request(app).post("/route1").send({ model: "Civic" }); // Year is not included
-  //   expect(res.statusCode).toBe(400);
-  //   expect(res.body).toHaveProperty("error");
+  //   test("Should return an ERROR if Year is empty", async () => {
+  //     const res = await request(app).post("/route1").send({ model: "Civic" }); // Year is not included
+  //     expect(res.statusCode).toBe(400);
+  //     expect(res.body).toHaveProperty("error");
+  //   });
   // });
 });
