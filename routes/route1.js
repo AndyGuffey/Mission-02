@@ -9,6 +9,22 @@ router.get("/", (req, res) => {
 router.post("/", (req, res) => {
   // Get model and year from the request body
   const { model, year } = req.body;
+  // -----------------------
+  // -- Validation Checks --
+  // -----------------------
+  // Check if year is negative
+  if (year < 0) {
+    return res.status(400).json({ error: "Year must be a positive number" });
+  }
+  // Check if year is a number
+  if (typeof year !== "number") {
+    return res.status(400).json({ error: "Year must be a number" });
+  }
+  // Check if model is a string
+  if (typeof model !== "string") {
+    return res.status(400).json({ error: "Model must be a string" });
+  }
+  // ----------------------------------------------------------------------------
 
   // get the sum of letter positions
   let letterSum = 0; // Initial letter sum always set to zero
