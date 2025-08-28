@@ -80,4 +80,8 @@ def test_age_40_and_10_experience():
           result= calculate_discount(age=20, experience=2)
           assert result == 0
 
+      def test_age_discount_only(self):
+        """Test 5% discount for drivers 25+ with less than 5 years experience"""
+        result = calculate_discount(age=25, experience=3)
+        assert result == 5
     
