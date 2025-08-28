@@ -1,5 +1,28 @@
 
 def calculate_discount(age: int, experience: int) -> int:
+
+    """
+    Calculate insurance discount rate based on driver's age and experience.
+    
+    Business Rules:
+    - Base discount: 0%
+    - Age 25+: +5%
+    - Experience 5+: +5% 
+    - Age 40+: +5% (additional)
+    - Experience 10+: +5% (additional)
+    - Maximum discount: 20%
+    
+    Args:
+        age (int): Driver's age in years
+        experience (int): Years of driving experience
+        
+    Returns:
+        int: Discount rate as percentage (0-20)
+        
+    Raises:
+        ValueError: If age or experience is negative
+    """
+    
     if age < 0 or experience <0:
         raise ValueError("Invalid input: negative values are not allowed ")
     
