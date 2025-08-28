@@ -34,20 +34,20 @@ def test_age_25_only():
     # Age 25, no experience → should be 5%
     assert calculate_discount(25, 0) == 5
 
-def calculate_discount(age:int, experience: int) -> int:
-    if age < 0 or experience <0:
-        raise ValueError("Invalid input: negative values are not allowed ")
+# def calculate_discount(age:int, experience: int) -> int:
+#     if age < 0 or experience <0:
+#         raise ValueError("Invalid input: negative values are not allowed ")
     
-    discount = 0 
-    if age >= 25:
-        discount += 5
-    if experience >= 5:
-        discount += 5
-    if age >= 40:
-        discount += 5
-    if experience >= 10:
-        discount += 5
-    return min(discount,20)
+#     discount = 0 
+#     if age >= 25:
+#         discount += 5
+#     if experience >= 5:
+#         discount += 5
+#     if age >= 40:
+#         discount += 5
+#     if experience >= 10:
+#         discount += 5
+#     return min(discount,20)
 
 # failing API tests
 
@@ -85,3 +85,8 @@ def test_age_40_and_10_experience():
         result = calculate_discount(age=25, experience=3)
         assert result == 5
     
+      def test_experience_discount_only(self):
+        """Test 5% discount for drivers under 25 with 5+ years experience"""
+        result = calculate_discount(age=20, experience=5)
+        assert result == 5
+        

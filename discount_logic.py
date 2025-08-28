@@ -1,6 +1,5 @@
 
 def calculate_discount(age: int, experience: int) -> int:
-
     """
     Calculate insurance discount rate based on driver's age and experience.
     
@@ -28,7 +27,7 @@ def calculate_discount(age: int, experience: int) -> int:
     
     discount = 0 
 
-    #   age-based  and exerienced-based discounts
+    # #   age-based  and exerienced-based discounts
     if age >= 25:
         discount += 5
     if experience >= 5:
@@ -38,5 +37,5 @@ def calculate_discount(age: int, experience: int) -> int:
     if experience >= 10:
             discount += 5
 
-    #cap out at 20% - maximum discount
+    # #cap out at 20% - maximum discount
     return min(discount, 20)
