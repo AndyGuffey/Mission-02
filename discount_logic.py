@@ -22,12 +22,13 @@ def calculate_discount(age: int, experience: int) -> int:
     Raises:
         ValueError: If age or experience is negative
     """
-    
+
     if age < 0 or experience <0:
         raise ValueError("Invalid input: negative values are not allowed ")
     
     discount = 0 
-      
+
+    #   age-based  and exerienced-based discounts
     if age >= 25:
         discount += 5
     if experience >= 5:
