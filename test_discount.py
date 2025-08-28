@@ -2,59 +2,39 @@ import pytest
 from fastapi.testclient import TestClient
 from main import app
 from discount_logic import calculate_discount
-
-client = TestClient(app)
-
-
-
-
-def test_base_discount():
-    # Driver age 30, experience 6 → should give 10%
-    assert calculate_discount(30, 6) == 10
-
-# failed on purpose as an example of a test case as calculate discount is not implemented yet
-
+#------------------------------------------------------------------------------------
 # || ----- API 4. Convert "Driver's Age and Experience" to a "Discount Rate" ----- ||
+# -----------------------------------------------------------------------------------
 # This API takes 2 parameters as input in JSON format that includes - the "age" (e.g. 30) and "experience" (e.g. 6 years of driving experience). The output is a JSON format with the suggested discount rate for the insurance policy, such as "10%".
 # Here are the example specifications and business rules of conversion:
 # INPUT	OUTPUT	ERROR OUTPUT
 # { age: 30; experience: 6 }	{ discount_rate: 10 }	{ error: "there is an error" }
  
+#  ---------------------------------
 # || ------ BUSINESS RULES ------ ||
+# ----------------------------------
+
 # The discount rate starts at 0%. 
 # Drivers aged 25 or older get a 5% discount,and those with 5 or more years of driving experience get another 5%. 
 # If the driver is 40 or older, they receive an extra 5%, and if they have 10 or more years of experience, they get another 5%. 
 # The maximum possible discount is 20%. 
 # If the input values are invalid, such as negative numbers or non-numeric values, an error message is returned.
 
-
+# ------------------------------------------
 # ||--- UNIT TESTS FOR DISCOUNT LOGIC ----||
-
-def test_age_25_only():
-    # Age 25, no experience → should be 5%
-    assert calculate_discount(25, 0) == 5
-
-# def calculate_discount(age:int, experience: int) -> int:
-#     if age < 0 or experience <0:
-#         raise ValueError("Invalid input: negative values are not allowed ")
-    
-#     discount = 0 
-#     if age >= 25:
-#         discount += 5
-#     if experience >= 5:
-#         discount += 5
-#     if age >= 40:
-#         discount += 5
-#     if experience >= 10:
-#         discount += 5
-#     return min(discount,20)
-
-# failing API tests
-
-from fastapi.testclient import TestClient
-from main import app
+# ------------------------------------------
 
 client = TestClient(app)
+
+def test_base_discount():
+# Driver age 30, experience 6 → should give 10%
+    assert calculate_discount(30, 6) == 10
+
+
+
+def test_age_25_only():
+# Age 25, no experience → should be 5%
+    assert calculate_discount(25, 0) == 5
 
 def test_api_discount_30_6():
     response = client.post("/discount", json={"age": 30, "experience": 6})
@@ -68,25 +48,51 @@ def test_invalid_negative_age():
 
 def test_age_40_and_10_experience():
   # age 40 and 10years experience → should be 20% (max cap)
-  assert calculate_discount(40, 10) == 20
+    assert calculate_discount(40, 10) == 20
 
+def test_zero_discount_for_young_inexperienced_driver():
+    """Test that drivers under 25 with less than 5 years experience get 0% discount"""
+    # Driver age 20, experience 1 → should give 0%
+    result= calculate_discount(age=20, experience=2)
+    assert result == 0
 
-  class TestCalculateDiscount:
-      """Test cases for the discount calculation business logic"""
-
-      def test_zero_discount_for_young_inexperienced_driver(self):
-          """Test that drivers under 25 with less than 5 years experience get 0% discount"""
-          # Driver age 20, experience 1 → should give 0%
-          result= calculate_discount(age=20, experience=2)
-          assert result == 0
-
-      def test_age_discount_only(self):
-        """Test 5% discount for drivers 25+ with less than 5 years experience"""
-        result = calculate_discount(age=25, experience=3)
-        assert result == 5
+def test_age_discount_only():
+    """Test 5% discount for drivers 25+ with less than 5 years experience"""
+    result = calculate_discount(age=25, experience=3)
+    assert result == 5
     
-      def test_experience_discount_only(self):
-        """Test 5% discount for drivers under 25 with 5+ years experience"""
-        result = calculate_discount(age=20, experience=5)
-        assert result == 5
+def test_experience_discount_only():
+    """Test 5% discount for drivers under 25 with 5+ years experience"""
+    result = calculate_discount(age=20, experience=5)
+    assert result == 5
         
+def test_maximum_discount_scenario():
+    """Test maximum discount with all criteria met"""
+    result = calculate_discount(age=45, experience=15)
+    assert result == 20
+
+def test_boundary_conditions():
+    """Test exact boundary values"""
+    assert calculate_discount(24, 4) == 0   # Just under thresholds
+    assert calculate_discount(25, 5) == 10  # Exactly at thresholds
+    assert calculate_discount(40, 10) == 20 # At higher thresholds
+
+def test_senior_with_little_experience():
+    """Test 40+ age with minimal experience"""
+    result = calculate_discount(age=42, experience=2)
+    assert result == 10  # 5% for age 25+ + 5% for age 40+
+
+def test_young_with_lots_experience():
+    """Test young driver with lots of experience"""
+    result = calculate_discount(age=22, experience=12)
+    assert result == 10  # 5% for exp 5+ + 5% for exp 10+
+
+def test_negative_experience_error():
+    """Test negative experience raises ValueError"""
+    with pytest.raises(ValueError, match="Invalid input: negative values are not allowed"):
+        calculate_discount(30, -1)
+
+def test_both_negative_error():
+    """Test both negative values raise ValueError"""
+    with pytest.raises(ValueError, match="Invalid input: negative values are not allowed"):
+        calculate_discount(-5, -2)
