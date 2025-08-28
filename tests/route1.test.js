@@ -126,6 +126,11 @@ describe("Car Value Suggestion", () => {
   //! ========================
   //! ==   Wrong Data Type  ==
   //! ========================
+  // - Model must be a string, year must be a number
+  // - If model is sent as a number or year as a string/other type
+  // - API should return a 400 error with a descriptive message
+  // - Type validation should happen before any calculations
+
   describe("Wrong Data Type Scenario", () => {
     test("Should return an ERROR if year is wrong data type: (Hilux, 'Twenty Twenty')", async () => {
       const res = await request(app)
@@ -148,19 +153,24 @@ describe("Car Value Suggestion", () => {
   //TODO ========================
   //TODO ==     Edge Cases     ==
   //TODO ========================
-  // describe("Edge Case Scenarios", () => {
-  //   test("Should return an ERROR if model is empty string", async () => {
-  //     const res = await request(app)
-  //       .post("/route1")
-  //       .send({ model: "", year: 1996 });
-  //     expect(res.statusCode).toBe(400);
-  //     expect(res.body).toHaveProperty("error");
-  //   });
+  // Additional validation requirements:
+  // - Empty model string ("") is not valid and should return 400
+  // - Missing required fields (model or year) should return 400
+  // - API must validate all inputs before attempting calculations
+  // - Appropriate error messages should inform the client what went wrong
+  describe("Edge Case Scenarios", () => {
+    test("Should return an ERROR if model is empty string: ( , 1996)", async () => {
+      const res = await request(app)
+        .post("/route1")
+        .send({ model: "", year: 1996 });
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("error");
+    });
 
-  //   test("Should return an ERROR if Year is empty", async () => {
-  //     const res = await request(app).post("/route1").send({ model: "Civic" }); // Year is not included
-  //     expect(res.statusCode).toBe(400);
-  //     expect(res.body).toHaveProperty("error");
-  //   });
-  // });
+    test("Should return an ERROR if Year is empty: (Civic, )", async () => {
+      const res = await request(app).post("/route1").send({ model: "Civic" }); // Year is not included
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("error");
+    });
+  });
 });

@@ -12,6 +12,15 @@ router.post("/", (req, res) => {
   // -----------------------
   // -- Validation Checks --
   // -----------------------
+
+  // Check if model is empty string
+  if (model === "") {
+    return res.status(400).json({ error: "Model cannot be empty " });
+  }
+  // Check if year is not provided
+  if (year === undefined) {
+    return res.status(400).json({ error: "Year is required" });
+  }
   // Check if year is negative
   if (year < 0) {
     return res.status(400).json({ error: "Year must be a positive number" });
