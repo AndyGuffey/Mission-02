@@ -63,6 +63,8 @@ def test_experience_discount_only():
     """Test 5% discount for drivers under 25 with 5+ years experience"""
     result = calculate_discount(age=20, experience=5)
     assert result == 5
+    
+    
 
 def test_api_negative_age_returns_400():
     """Test API returns 400 for negative age"""
