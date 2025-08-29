@@ -26,17 +26,14 @@ app.get("/", (req, res) => {
   res.send("Mission-02 base endpoint hit! 🎯");
 });
 
-// Set Port
-// Export the app for Supertest; start server only when run directly
-// const PORT = process.env.PORT || 4000;
-// if (require.main === module) {
-//   app.listen(PORT, () =>
-//     console.log(`Server is running http://localhost:${PORT}`)
-//   );
-// }
-// const PORT = 4000;
-// app.listen(PORT, () =>
-//   console.log(`Server is running http://localhost:${PORT}`)
-// );
+// Export the app for testing with Supertest
+module.exports = app;
+// Only start the server if this file is run directly (not when imported for tests)
+if (require.main === module) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () =>
+    console.log(`Server is running http://localhost:${PORT}`)
+  );
+}
 
-module.exports = app;               // for testing purposes
+
