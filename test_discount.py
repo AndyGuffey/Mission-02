@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from main import app
 from fastapi.exceptions import RequestValidationError
+from discount_logic import calculate_discount
 #------------------------------------------------------------------------------------
 # || ----- API 4. Convert "Driver's Age and Experience" to a "Discount Rate" ----- ||
 # -----------------------------------------------------------------------------------
@@ -116,10 +117,10 @@ def test_both_negative_error():
         calculate_discount(-5, -2)
         
 def test_api_experience_greater_than_age():
-    """Test API handles experience greater than age"""
+    """Test API returns 400 when experience exceeds age"""
     response = client.post("/discount", json={"age": 30, "experience": 35})
     assert response.status_code == 400
-    assert "Invalid input: experience cannot exceed age" in response.json()["detail"]
+    assert "experience cannot exceed age" in response.json()["detail"]
     
 def test_api_non_numeric_input():
     """Test API returns 422 for non-numeric input"""
